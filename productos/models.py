@@ -13,22 +13,37 @@ class Producto(models.Model):
 
 
 class Orden(models.Model):
+    ESTADOS= [
+        ('pendiente', 'Pendiente'),
+        ('pagada', 'Pagada'),
+        ('cancelada', 'Cancelada')
+    ]
+
+    nombre_cliente = models.CharField(max_length=200, default='SIN NOMBRE')
     total = models.DecimalField(max_digits=10, decimal_places=2)
+    estado = models.CharField(max_length=50, choices=ESTADOS, default='pendiente')
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Orden {self.id}"
+        return f"Orden {self.id} - {self.nombre_cliente}"
 
 
 class Pago(models.Model):
+
+    ESTADOS = [
+        ('pendiente', 'Pendiente'),
+        ('pagada', 'Pagada'),
+        ('cancelada', 'Cancelada')
+    ]
+
     orden = models.OneToOneField(
         Orden,
         on_delete=models.CASCADE
     )
 
-    metodo_pago = models.CharField(max_length=100)
+    stripe_payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
 
-    estado = models.CharField(max_length=50)
+    estado = models.CharField(max_length=50, choices=ESTADOS, default='pendiente')
 
     fecha_pago = models.DateTimeField(auto_now_add=True)
 
