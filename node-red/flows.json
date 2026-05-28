@@ -1,0 +1,315 @@
+[
+    {
+        "id": "afba464ad22e772a",
+        "type": "tab",
+        "label": "Automation_store",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "288cb1e666db0c13",
+        "type": "telegram bot",
+        "botname": "andres_narvaez_1102_bot",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "testenvironment": false,
+        "updatemode": "polling",
+        "pollinterval": 300,
+        "usesocks": false,
+        "sockshost": "",
+        "socksprotocol": "socks5",
+        "socksport": 6667,
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbothost": "0.0.0.0",
+        "localbotport": 8443,
+        "publicbotport": 8443,
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    },
+    {
+        "id": "0234831b43d8bd74",
+        "type": "telegram receiver",
+        "z": "afba464ad22e772a",
+        "name": "Recepcion mensajes",
+        "bot": "288cb1e666db0c13",
+        "saveDataDir": "",
+        "filterCommands": false,
+        "hasinput": false,
+        "inputs": 0,
+        "handleallupdates": false,
+        "handleprocessupdates": false,
+        "x": 110,
+        "y": 220,
+        "wires": [
+            [
+                "b6fee5d9992012ef"
+            ],
+            [
+                "415120f830c9b40b"
+            ]
+        ]
+    },
+    {
+        "id": "2464539b5c0d995b",
+        "type": "telegram command",
+        "z": "afba464ad22e772a",
+        "name": "",
+        "command": "/start",
+        "description": "",
+        "registercommand": false,
+        "language": "",
+        "scope": "default",
+        "bot": "288cb1e666db0c13",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 70,
+        "y": 460,
+        "wires": [
+            [
+                "60e395733be08975"
+            ],
+            [
+                "4bcd2fa89c32d5c6"
+            ]
+        ]
+    },
+    {
+        "id": "60e395733be08975",
+        "type": "function",
+        "z": "afba464ad22e772a",
+        "name": "function 2",
+        "func": "let chatId = msg.payload.chatId;\nflow.set(\"estado_\" + chatId, \"en_menu\")\nmsg.payload={\n    \"chatId\": chatId,\n    \"type\": \"message\",\n    \"content\": \"Hola bienvenido a nuestra tienda\\n\\nSelecciona la opción que desea realizar\\n\\n1- Consultar productos\\n\\n2- Consulta tus órdenes\"\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 420,
+        "wires": [
+            [
+                "d9f9343c2655039a"
+            ]
+        ]
+    },
+    {
+        "id": "d9f9343c2655039a",
+        "type": "telegram sender",
+        "z": "afba464ad22e772a",
+        "name": "",
+        "bot": "288cb1e666db0c13",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 690,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b6fee5d9992012ef",
+        "type": "function",
+        "z": "afba464ad22e772a",
+        "name": "function 3",
+        "func": "let chatId = msg.payload.chatId;\nlet texto = msg.payload.content;\n\nlet estado = flow.get(\"estado_\" + chatId);\n\n\nif(estado === \"en_menu\"){\n    if(texto === \"1\") {\n        flow.set(\"estado_\" + chatId, \"listando_productos\");\n        flow.set(\"chatId_activo\", chatId);\n\n        return [msg, null];\n    }\n\n    if(texto === \"2\") {\n\n        msg.payload = {\n            chatId: chatId,\n            type: \"message\",\n            content: \"Mostrando órdenes...\"\n        };\n\n        return [null, msg];\n    }\n}\nreturn null;",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 220,
+        "wires": [
+            [
+                "43eb63a49c0a7987"
+            ],
+            [
+                "d9f9343c2655039a"
+            ]
+        ]
+    },
+    {
+        "id": "4bcd2fa89c32d5c6",
+        "type": "debug",
+        "z": "afba464ad22e772a",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 260,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "415120f830c9b40b",
+        "type": "debug",
+        "z": "afba464ad22e772a",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 300,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "045ee2d0470f676e",
+        "type": "telegram receiver",
+        "z": "afba464ad22e772a",
+        "name": "",
+        "bot": "288cb1e666db0c13",
+        "saveDataDir": "",
+        "filterCommands": false,
+        "hasinput": false,
+        "inputs": 0,
+        "handleallupdates": false,
+        "handleprocessupdates": false,
+        "x": 270,
+        "y": 80,
+        "wires": [
+            [
+                "ac3e86e1f8cd62f3"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "ac3e86e1f8cd62f3",
+        "type": "debug",
+        "z": "afba464ad22e772a",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "43eb63a49c0a7987",
+        "type": "http request",
+        "z": "afba464ad22e772a",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://127.0.0.1:8000/productos/",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 610,
+        "y": 220,
+        "wires": [
+            [
+                "f3d07d371680e645",
+                "c3cb9c0bcdf4b150"
+            ]
+        ]
+    },
+    {
+        "id": "f3d07d371680e645",
+        "type": "function",
+        "z": "afba464ad22e772a",
+        "name": "function 1",
+        "func": "const productos = msg.payload;\nconst chatId = msg.originalMessage.chat.id;  // ← viene en el mensaje original\n\nlet mensaje = \"📦 *Lista de Productos*\\n\\n\";\n\nproductos.forEach(p => {\n    mensaje += `*id Producto: ${p.id}*\\n`;\n    mensaje += `*${p.nombre}*\\n`;\n    mensaje += `💰 Precio: $${p.precio}\\n`;\n    mensaje += `📊 Stock: ${p.stock}\\n\\n`;\n});\n\nmensaje += '\\n\\nEscribe el id del producto que deseas comprar...';\n\nmsg.payload = {\n    chatId: chatId,\n    type: \"message\",\n    content: mensaje\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 220,
+        "wires": [
+            [
+                "d9f9343c2655039a"
+            ]
+        ]
+    },
+    {
+        "id": "a66c814b1967d996",
+        "type": "telegram receiver",
+        "z": "afba464ad22e772a",
+        "name": "",
+        "bot": "",
+        "saveDataDir": "",
+        "filterCommands": false,
+        "hasinput": false,
+        "inputs": 0,
+        "handleallupdates": false,
+        "handleprocessupdates": false,
+        "x": 110,
+        "y": 760,
+        "wires": [
+            [
+                "03ce1b727c346693"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "03ce1b727c346693",
+        "type": "function",
+        "z": "afba464ad22e772a",
+        "name": "function 4",
+        "func": " // listando_productos\nlet estado = flow.get(\"estado_\" + chatId);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 1,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c3cb9c0bcdf4b150",
+        "type": "debug",
+        "z": "afba464ad22e772a",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 140,
+        "wires": []
+    }
+]
