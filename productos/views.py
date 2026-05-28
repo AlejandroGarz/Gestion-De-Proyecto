@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse
 from .models import Producto
 
@@ -33,3 +34,28 @@ def detalle_producto(request, id):
     }
 
     return JsonResponse(data)
+
+def crear_producto(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+
+        nombre = body.get('nombre')
+        descripcion = body.get('descripcion')
+        precio = body.get('precio')
+        stock = body.get('stock')
+
+        producto = Producto.objects.create(
+            nombre=nombre,
+            descripcion=descripcion,
+            precio=precio,
+            stock=stock
+        )
+
+        return JsonResponse({
+            "id": producto.id,
+            "nombre": producto.nombre,
+            "mensaje": "Producto creado con éxito"
+        }, status=201)
+    
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
