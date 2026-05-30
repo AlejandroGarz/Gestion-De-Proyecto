@@ -20,9 +20,17 @@ class Orden(models.Model):
     ]
 
     nombre_cliente = models.CharField(max_length=200, default='SIN NOMBRE')
+    documento_cliente = models.CharField(max_length=200, default='0')
     total = models.DecimalField(max_digits=10, decimal_places=2)
     estado = models.CharField(max_length=50, choices=ESTADOS, default='pendiente')
     fecha = models.DateTimeField(auto_now_add=True)
+    unidades = models.IntegerField(default=0)
+
+    producto = models.ForeignKey(
+        Producto,
+        on_delete=models.CASCADE,
+        default=0
+    )
 
     def __str__(self):
         return f"Orden {self.id} - {self.nombre_cliente}"
