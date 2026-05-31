@@ -37,22 +37,16 @@ class Orden(models.Model):
 
 
 class Pago(models.Model):
-
     ESTADOS = [
         ('pendiente', 'Pendiente'),
         ('pagada', 'Pagada'),
         ('cancelada', 'Cancelada')
     ]
 
-    orden = models.OneToOneField(
-        Orden,
-        on_delete=models.CASCADE
-    )
-
+    orden = models.OneToOneField(Orden, on_delete=models.CASCADE)
     stripe_payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
-
+    monto = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # ← agregar
     estado = models.CharField(max_length=50, choices=ESTADOS, default='pendiente')
-
     fecha_pago = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

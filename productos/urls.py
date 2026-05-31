@@ -10,5 +10,9 @@ urlpatterns = [
 
     path('orden/crear', views.crear_orden),
 
+    path('pagos/crear/', views.crear_pago),
+
+    path('pagos/webhook/', views.webhook_stripe),
+
    
 ]

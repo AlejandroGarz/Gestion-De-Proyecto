@@ -9,3 +9,4 @@ media/
 staticfiles/
 node-red/node_modules/
 node-red/flows_cred.json
+.env

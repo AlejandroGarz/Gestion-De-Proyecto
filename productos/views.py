@@ -1,9 +1,13 @@
 import json
+import stripe
 from django.http import JsonResponse
-from .models import Producto, Orden
+from .models import Producto, Orden, Pago
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from decouple import config
 
+
+stripe.api_key = stripe.api_key = config('STRIPE_SECRET_KEY')
 
 def lista_productos(request):
 
@@ -98,3 +102,71 @@ def crear_orden(request):
             "total": str(total)
 
         }, status=201)
+
+@csrf_exempt
+def crear_pago(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        orden_id = body.get('orden_id')
+
+        try:
+            orden = Orden.objects.get(id=orden_id)
+        except Orden.DoesNotExist:
+            return JsonResponse({"error": "Orden no encontrada"}, status=404)
+
+        payment_link = stripe.PaymentLink.create(
+            line_items=[{
+                'price_data': {
+                    'currency': 'cop',
+                    'product_data': {
+                        'name': f'Orden #{orden.id} - {orden.nombre_cliente}',
+                    },
+                    'unit_amount': int(orden.total * 100),
+                },
+                'quantity': 1,
+            }],
+        )
+
+        Pago.objects.create(
+            orden=orden,
+            stripe_payment_intent_id=payment_link.id,
+            monto=orden.total,
+            estado='pendiente'
+        )
+
+        return JsonResponse({
+            "link": payment_link.url,
+            "orden_id": orden.id
+        })
+    
+@csrf_exempt
+@csrf_exempt
+def webhook_stripe(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    webhook_secret = config('STRIPE_WEBHOOK_SECRET')
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, webhook_secret
+        )
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        
+        # acceder como atributo, no como diccionario
+        payment_link_id = session.payment_link
+
+        try:
+            pago = Pago.objects.get(stripe_payment_intent_id=payment_link_id)
+            pago.estado = 'pagada'
+            pago.save()
+
+            pago.orden.estado = 'pagada'
+            pago.orden.save()
+        except Pago.DoesNotExist:
+            pass
+
+    return JsonResponse({"status": "ok"})
