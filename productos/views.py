@@ -140,7 +140,6 @@ def crear_pago(request):
         })
     
 @csrf_exempt
-@csrf_exempt
 def webhook_stripe(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
@@ -156,7 +155,6 @@ def webhook_stripe(request):
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         
-        # acceder como atributo, no como diccionario
         payment_link_id = session.payment_link
 
         try:
