@@ -3,6 +3,8 @@
 #include <Adafruit_SSD1306.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include "credentials.h"
+
 //#include <ESP32Servo.h>
 
 // OLED
@@ -12,10 +14,9 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // WiFi
-const char* ssid = "AndresNarvaez";
-const char* password = "A1005707nc03";
-
-const char* mqtt_server = "192.168.1.2";
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
+const char* mqtt_server = MQTT_SERVER;
 WiFiClient espClient;
 PubSubClient client(espClient);
 

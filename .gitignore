@@ -10,3 +10,4 @@ staticfiles/
 node-red/node_modules/
 node-red/flows_cred.json
 .env
+code_esp32/credentials.h
