@@ -20,13 +20,9 @@ const char* mqtt_server = MQTT_SERVER;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-// Servo
-//Servo servo;
-//define PIN_SERVO 48  // cambia al pin que uses
 
 #define LED_DISPENSAR 48
 
-// cuando llega mensaje MQTT
 void callback(char* topic, byte* payload, unsigned int length) {
     String mensaje = "";
     for (int i = 0; i < length; i++) {
@@ -86,7 +82,6 @@ void setup() {
     Serial.begin(115200);
     delay(2000);
 
-    // OLED
     Wire.begin(1, 2);
     if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
         Serial.println("Error OLED");
@@ -100,7 +95,6 @@ void setup() {
     display.println("Conectando WiFi...");
     display.display();
 
-    // WiFi
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
@@ -119,16 +113,11 @@ void setup() {
     pinMode(LED_DISPENSAR, OUTPUT);
     digitalWrite(LED_DISPENSAR, LOW);
 
-    // Servo
-    // servo.attach(PIN_SERVO);
-    // servo.write(0);
 
-    // MQTT
     client.setServer(mqtt_server, 1883);
     client.setCallback(callback);
     conectarMQTT();
 
-    // pantalla de espera
     display.clearDisplay();
     display.setCursor(0, 20);
     display.println("Esperando...");
