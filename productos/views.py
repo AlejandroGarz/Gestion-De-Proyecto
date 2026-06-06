@@ -5,6 +5,7 @@ from .models import Producto, Orden, Pago
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from decouple import config
+import random
 
 
 stripe.api_key = stripe.api_key = config('STRIPE_SECRET_KEY')
@@ -150,12 +151,16 @@ def webhook_stripe(request):
             payload, sig_header, webhook_secret
         )
     except Exception as e:
+        print("Error webhook:", str(e))  
         return JsonResponse({"error": str(e)}, status=400)
+
+    print("Evento recibido:", event['type'])
 
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         
         payment_link_id = session.payment_link
+        print("Payment link ID:", payment_link_id)
 
         try:
             pago = Pago.objects.get(stripe_payment_intent_id=payment_link_id)
@@ -168,3 +173,44 @@ def webhook_stripe(request):
             pass
 
     return JsonResponse({"status": "ok"})
+
+
+@csrf_exempt
+def generar_token(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        orden_id = body.get('orden_id')
+
+        try:
+            orden = Orden.objects.get(id=orden_id, estado='pagada')
+        except Orden.DoesNotExist:
+            return JsonResponse({"error": "Orden no encontrada o no pagada"}, status=404)
+
+        token = str(random.randint(1000, 9999))
+        orden.token_dispensar = token
+        orden.save()
+
+        return JsonResponse({
+            "token": token,
+            "orden_id": orden.id
+        })
+
+@csrf_exempt
+def verificar_token(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        orden_id = body.get('orden_id')
+        token = body.get('token')
+
+        try:
+            orden = Orden.objects.get(id=orden_id, token_dispensar=token)
+            orden.estado = 'dispensada'
+            orden.token_dispensar = ''
+            orden.save()
+
+            return JsonResponse({
+                "mensaje": "Token correcto",
+                "orden_id": orden.id
+            })
+        except Orden.DoesNotExist:
+            return JsonResponse({"error": "Token incorrecto"}, status=400)

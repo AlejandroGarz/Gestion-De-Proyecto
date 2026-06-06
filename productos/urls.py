@@ -14,5 +14,9 @@ urlpatterns = [
 
     path('pagos/webhook/', views.webhook_stripe),
 
+    path('ordenes/generar-token/', views.generar_token),
+    
+    path('ordenes/verificar-token/', views.verificar_token),
+
    
 ]

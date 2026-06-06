@@ -32,6 +32,8 @@ class Orden(models.Model):
         default=0
     )
 
+    token_dispensar = models.CharField(max_length=10, blank=True, default='')
+
     def __str__(self):
         return f"Orden {self.id} - {self.nombre_cliente}"
 
